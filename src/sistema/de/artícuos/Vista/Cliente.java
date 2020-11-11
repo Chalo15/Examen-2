@@ -39,11 +39,11 @@ public class Cliente extends javax.swing.JFrame {
         Preciolb = new javax.swing.JLabel();
         PrecioTxt = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
-        CodigoTxt = new javax.swing.JTextField();
+        CantidadTxt = new javax.swing.JTextField();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        jButton3 = new javax.swing.JButton();
+        Eliminarbtn = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         FiltarBtn = new javax.swing.JButton();
         CategoriaCombo2 = new javax.swing.JComboBox<>();
@@ -77,7 +77,7 @@ public class Cliente extends javax.swing.JFrame {
 
         Descripcionlb.setText("Descripcion");
 
-        CategoriaCombo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        CategoriaCombo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {  }));
         CategoriaCombo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 CategoriaComboActionPerformed(evt);
@@ -92,7 +92,7 @@ public class Cliente extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setText("Código");
+        jLabel1.setText("Catidad");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -123,7 +123,7 @@ public class Cliente extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(PrecioTxt)
-                            .addComponent(CodigoTxt))))
+                            .addComponent(CantidadTxt))))
                 .addGap(24, 24, 24))
         );
         jPanel1Layout.setVerticalGroup(
@@ -144,7 +144,7 @@ public class Cliente extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(CodigoTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(CantidadTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 33, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(CategoriaCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -170,18 +170,28 @@ public class Cliente extends javax.swing.JFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "Categoría", "Artículo", "Código", "Precio"
+                "Categoría", "Artículo", "Cantidad", "Precio"
             }
         ));
         jScrollPane1.setViewportView(jTable1);
 
-        jButton3.setText("Eliminar");
+        Eliminarbtn.setText("Eliminar");
+        Eliminarbtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                EliminarbtnActionPerformed(evt);
+            }
+        });
 
         jLabel2.setText("Categoría");
 
         FiltarBtn.setText("Filtrar");
+        FiltarBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                FiltarBtnActionPerformed(evt);
+            }
+        });
 
-        CategoriaCombo2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        CategoriaCombo2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { }));
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -199,7 +209,7 @@ public class Cliente extends javax.swing.JFrame {
                         .addComponent(FiltarBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(191, 191, 191)
-                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(Eliminarbtn, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -213,7 +223,7 @@ public class Cliente extends javax.swing.JFrame {
                 .addGap(56, 56, 56)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton3)
+                .addComponent(Eliminarbtn)
                 .addContainerGap(23, Short.MAX_VALUE))
         );
 
@@ -259,6 +269,14 @@ public class Cliente extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_NombreTxtActionPerformed
 
+    private void FiltarBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_FiltarBtnActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_FiltarBtnActionPerformed
+
+    private void EliminarbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EliminarbtnActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_EliminarbtnActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -295,19 +313,19 @@ public class Cliente extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField CantidadTxt;
     private javax.swing.JComboBox<String> CategoriaCombo;
     private javax.swing.JComboBox<String> CategoriaCombo2;
     private javax.swing.JLabel Categorialb;
-    private javax.swing.JTextField CodigoTxt;
     private javax.swing.JTextField DescripcionTxt;
     private javax.swing.JLabel Descripcionlb;
+    private javax.swing.JButton Eliminarbtn;
     private javax.swing.JButton FiltarBtn;
     private javax.swing.JButton GuardarBtn;
     private javax.swing.JTextField NombreTxt;
     private javax.swing.JLabel Nombrelb;
     private javax.swing.JTextField PrecioTxt;
     private javax.swing.JLabel Preciolb;
-    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
