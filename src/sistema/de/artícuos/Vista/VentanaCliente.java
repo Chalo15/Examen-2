@@ -5,17 +5,37 @@
  */
 package sistema.de.artícuos.Vista;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.util.Scanner;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
+
+
 /**
  *
  * @author Gonzalo
  */
-public class Cliente extends javax.swing.JFrame {
+public class VentanaCliente extends JFrame implements Runnable {
+    private Thread hiloCliente;
+    private PrintWriter salida;
+    private BufferedInputStream entrada;
+    private Socket sok;
+    int banderaOpcion;
 
     /**
      * Creates new form Cliente
      */
-    public Cliente() {
+    public VentanaCliente() {
         initComponents();
+        
+        hiloCliente = new Thread(this);
+        if(hiloCliente!=null){
+            hiloCliente.start();
+        }
     }
 
     /**
@@ -92,7 +112,7 @@ public class Cliente extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setText("Catidad");
+        jLabel1.setText("Cantidad");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -114,7 +134,7 @@ public class Cliente extends javax.swing.JFrame {
                         .addComponent(GuardarBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(Categorialb, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(CategoriaCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -145,7 +165,7 @@ public class Cliente extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(CantidadTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 33, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(CategoriaCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(Categorialb))
@@ -172,7 +192,15 @@ public class Cliente extends javax.swing.JFrame {
             new String [] {
                 "Categoría", "Artículo", "Cantidad", "Precio"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
 
         Eliminarbtn.setText("Eliminar");
@@ -197,7 +225,7 @@ public class Cliente extends javax.swing.JFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 535, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 541, Short.MAX_VALUE)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
@@ -220,9 +248,9 @@ public class Cliente extends javax.swing.JFrame {
                     .addComponent(jLabel2)
                     .addComponent(FiltarBtn)
                     .addComponent(CategoriaCombo2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(56, 56, 56)
+                .addGap(51, 51, 51)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addComponent(Eliminarbtn)
                 .addContainerGap(23, Short.MAX_VALUE))
         );
@@ -259,6 +287,15 @@ public class Cliente extends javax.swing.JFrame {
 
     private void GuardarBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GuardarBtnActionPerformed
         // TODO add your handling code here:
+        if(NombreTxt.getText().length()==0||DescripcionTxt.getText().length()==0||PrecioTxt.getText().length()==0||CantidadTxt.getText().length()==0||CategoriaCombo.getSelectedIndex()==-1){
+            JOptionPane.showMessageDialog(null, "Has dejado uno o mas campos sin llenar");
+        }
+        else {           
+            String s = String.valueOf(1);
+            System.out.println("Enviando datos al servidor: " + s);
+            salida.println(s);
+            salida.flush();           
+        }   
     }//GEN-LAST:event_GuardarBtnActionPerformed
 
     private void PrecioTxtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PrecioTxtActionPerformed
@@ -271,10 +308,18 @@ public class Cliente extends javax.swing.JFrame {
 
     private void FiltarBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_FiltarBtnActionPerformed
         // TODO add your handling code here:
+        String s = String.valueOf(2);
+        System.out.println("Enviando datos al servidor: " + s);
+        salida.println(s);
+        salida.flush();
     }//GEN-LAST:event_FiltarBtnActionPerformed
 
     private void EliminarbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EliminarbtnActionPerformed
         // TODO add your handling code here:
+        String s = String.valueOf(3);
+        System.out.println("Enviando datos al servidor: " + s);
+        salida.println(s);
+        salida.flush();
     }//GEN-LAST:event_EliminarbtnActionPerformed
 
     /**
@@ -294,20 +339,21 @@ public class Cliente extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Cliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(VentanaCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Cliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(VentanaCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Cliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(VentanaCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Cliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(VentanaCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Cliente().setVisible(true);
+                new VentanaCliente().setVisible(true);
             }
         });
     }
@@ -334,4 +380,33 @@ public class Cliente extends javax.swing.JFrame {
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void run() {
+        int puerto = 1234;
+        String servidor = "localhost";
+        
+        try{
+           
+            sok = new Socket(servidor, puerto);
+
+            salida = new PrintWriter(sok.getOutputStream());
+            entrada =
+                    new BufferedInputStream(sok.getInputStream());
+            Scanner srv = new Scanner(entrada);
+            
+            while (hiloCliente == Thread.currentThread()){
+                
+                // Espera la respuesta..
+                String c = srv.nextLine();
+                System.out.println("Confirmación: " + c);
+            }
+            
+            
+        } catch (IOException e) {
+            System.err.println("Ocurrio un error con la entrada de datos ... ");
+        }catch (Exception e) {
+            System.err.println(" Ocurrio un error con la respuesta del servidor ...");
+        }
+    }
 }
