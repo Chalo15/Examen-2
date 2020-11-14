@@ -10,13 +10,14 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Observable;
 import sistema.de.articulos.Control.GestorCliente;
 
 /**
  *
  * @author USER
  */
-public class Servidor {
+public class Servidor extends Observable {
     
     public static void main(String[] args) {
         Servidor a = new Servidor();

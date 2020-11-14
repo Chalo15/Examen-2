@@ -7,9 +7,13 @@ package sistema.de.artícuos.Vista;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Observer;
 import java.util.Scanner;
+import javafx.beans.InvalidationListener;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -19,12 +23,17 @@ import javax.swing.JOptionPane;
  *
  * @author Gonzalo
  */
-public class VentanaCliente extends JFrame implements Runnable {
+public class VentanaCliente extends JFrame implements Runnable, Observer {
     private Thread hiloCliente;
-    private PrintWriter salida;
-    private BufferedInputStream entrada;
+    private ObjectInputStream entrada;
+    private ObjectOutputStream salida;
+    //private PrintWriter salida;
+    //private BufferedInputStream entrada;
     private Socket sok;
+    private String nombre, descripcion,categoria;
+    private int precio, cantidad;
     int banderaOpcion;
+    private Articulo articulo;
 
     /**
      * Creates new form Cliente
@@ -225,7 +234,6 @@ public class VentanaCliente extends JFrame implements Runnable {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 541, Short.MAX_VALUE)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
@@ -238,7 +246,10 @@ public class VentanaCliente extends JFrame implements Runnable {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(191, 191, 191)
                         .addComponent(Eliminarbtn, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(160, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -252,7 +263,7 @@ public class VentanaCliente extends JFrame implements Runnable {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(Eliminarbtn)
-                .addContainerGap(23, Short.MAX_VALUE))
+                .addContainerGap(28, Short.MAX_VALUE))
         );
 
         jSplitPane1.setRightComponent(jPanel2);
@@ -290,11 +301,31 @@ public class VentanaCliente extends JFrame implements Runnable {
         if(NombreTxt.getText().length()==0||DescripcionTxt.getText().length()==0||PrecioTxt.getText().length()==0||CantidadTxt.getText().length()==0||CategoriaCombo.getSelectedIndex()==-1){
             JOptionPane.showMessageDialog(null, "Has dejado uno o mas campos sin llenar");
         }
-        else {           
-            String s = String.valueOf(1);
-            System.out.println("Enviando datos al servidor: " + s);
-            salida.println(s);
-            salida.flush();           
+        else { 
+            try {
+                nombre= NombreTxt.getText();
+            descripcion=DescripcionTxt.getText();
+            precio=Integer.parseInt(PrecioTxt.getText());
+            cantidad=Integer.parseInt(CantidadTxt.getText());
+            categoria=String.valueOf(CategoriaCombo.getSelectedItem()); 
+            banderaOpcion=1;
+           // String s = String.valueOf(1);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Favor de ingresar un valor numérico en las casillas de precio y cantidad","Error",JOptionPane.ERROR_MESSAGE);
+            }
+            
+            articulo=new Articulo(nombre,descripcion,categoria,precio,cantidad,banderaOpcion);
+            System.out.println("Enviando datos al servidor: ");
+            try{
+            salida.writeObject(articulo);
+            salida.flush();
+            }
+            catch(Exception ex){
+                ex.printStackTrace();
+            }
+            
+            //salida.println(s);//se envia el obejto articulo
+            //salida.flush();           
         }   
     }//GEN-LAST:event_GuardarBtnActionPerformed
 
@@ -310,16 +341,16 @@ public class VentanaCliente extends JFrame implements Runnable {
         // TODO add your handling code here:
         String s = String.valueOf(2);
         System.out.println("Enviando datos al servidor: " + s);
-        salida.println(s);
-        salida.flush();
+       // salida.println(s);
+        //salida.flush();
     }//GEN-LAST:event_FiltarBtnActionPerformed
 
     private void EliminarbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EliminarbtnActionPerformed
         // TODO add your handling code here:
         String s = String.valueOf(3);
         System.out.println("Enviando datos al servidor: " + s);
-        salida.println(s);
-        salida.flush();
+        //salida.println(s);
+        //salida.flush();
     }//GEN-LAST:event_EliminarbtnActionPerformed
 
     /**
@@ -389,16 +420,18 @@ public class VentanaCliente extends JFrame implements Runnable {
         try{
            
             sok = new Socket(servidor, puerto);
-
-            salida = new PrintWriter(sok.getOutputStream());
+            entrada = new ObjectInputStream(sok.getInputStream());
+            salida = new ObjectOutputStream(sok.getOutputStream());
+           /* salida = new PrintWriter(sok.getOutputStream());
             entrada =
                     new BufferedInputStream(sok.getInputStream());
             Scanner srv = new Scanner(entrada);
-            
+            */
             while (hiloCliente == Thread.currentThread()){
                 
                 // Espera la respuesta..
-                String c = srv.nextLine();
+                //String c = srv.nextLine();
+                String c = entrada.readObject().toString();
                 System.out.println("Confirmación: " + c);
             }
             
@@ -408,5 +441,19 @@ public class VentanaCliente extends JFrame implements Runnable {
         }catch (Exception e) {
             System.err.println(" Ocurrio un error con la respuesta del servidor ...");
         }
+    }
+
+    
+
+    @Override
+    public void update(java.util.Observable o, Object o1) {
+        
+        
+        //llenar la tabla y los combo box con la info del server
+        
+        
+        
+        
+        
     }
 }

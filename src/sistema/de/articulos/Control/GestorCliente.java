@@ -5,13 +5,16 @@
  */
 package sistema.de.articulos.Control;
 
-import java.io.BufferedInputStream;
+//import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+//import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.Scanner;
+//import java.util.Scanner;
 import sistema.de.artícuos.Modelo.Servidor;
+import sistema.de.artícuos.Vista.Articulo;
 
 /**
  *
@@ -30,19 +33,50 @@ public class GestorCliente implements Runnable{
 
     @Override
     public void run() {
-        try {            
-            entrada =
-                    new BufferedInputStream(sktCliente.getInputStream());
-            Scanner r = new Scanner(entrada);
-            salida = new PrintWriter(sktCliente.getOutputStream());
+        try {        
+            entrada = new ObjectInputStream(sktCliente.getInputStream());
+            salida = new ObjectOutputStream(sktCliente.getOutputStream());
+
             
-            while(true) {
-                String s = r.nextLine();
-                System.out.println("Línea recibida del Cliente#" + nCliente + ": " + s);
-                salida.println("OK");
-                salida.flush();
+            while(true) {//extraigo la info del objeto
+                  String c = entrada.readObject().toString();
+                  Articulo art=null;
+                  try{
+                      art=(Articulo)entrada.readObject();
+                  }
+                   catch (ClassNotFoundException ex) {
+                    
+                } 
+                  catch (IOException ex) {
+            System.err.println(ex.getMessage());
+        }
+          
+                System.out.println("Línea recibida del Cliente#" + nCliente + ": " + c);
+                
+                
+                
+                int opc=art.getBanderaOpcion();
+                switch(opc){
+                    case 1:
+                     //meter los datos a la base de datos   
+                     break;
+                    case 2:
+                        //filtrar las categorias y retornar la wea
+                        break;
+                    case 3:
+                        //eliminar
+                        break;
+                }
+                   
+                try{
+                    //llamo metdo que actualiza la matriz desde la base de datos y luego la retorno
+             salida.writeObject(this);
+            salida.flush();
             }
-            
+            catch(Exception ex){
+                ex.printStackTrace();
+            }
+            }
         } catch (IOException e) {
             System.err.println("Ocurrio un error con la entrada de datos ... ");
         }
@@ -50,14 +84,20 @@ public class GestorCliente implements Runnable{
             System.err.println(" Se perdió la conexión con el cliente ...");
         }
         finally{
+            try{
             salida.close();
             try {
                 entrada.close();
             } catch (IOException ex) {
                 System.err.println("Ocurrio un error con la entrada de datos ... ");
             }
-            System.out.println("Servidor - Conexión cerrada ...");
-        }
+            System.out.println("Ocurrio un error con la salida de datos ...");
+            }
+            catch(IOException ex){
+                System.err.println("Ocurrio un error con la entrada de datos ... ");
+            }
+            }
+            
     }  
     
     @Override
@@ -70,7 +110,9 @@ public class GestorCliente implements Runnable{
     private Servidor gestorPrincipal;
     private InetAddress direccionCliente;
     private Socket sktCliente;
-    private BufferedInputStream entrada;
-    private PrintWriter salida;   
+    private ObjectInputStream entrada;
+    private ObjectOutputStream salida;
+    //private BufferedInputStream entrada;
+    //private PrintWriter salida;   
     private final int nCliente;
 }
