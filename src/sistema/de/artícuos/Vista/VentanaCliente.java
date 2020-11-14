@@ -40,7 +40,7 @@ public class VentanaCliente extends JFrame implements Runnable, Observer {
      */
     public VentanaCliente() {
         initComponents();
-        
+    
         hiloCliente = new Thread(this);
         if(hiloCliente!=null){
             hiloCliente.start();
@@ -106,7 +106,7 @@ public class VentanaCliente extends JFrame implements Runnable, Observer {
 
         Descripcionlb.setText("Descripcion");
 
-        CategoriaCombo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {  }));
+        CategoriaCombo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Lacteos", "Abarrotes", "Libros", "Herramientas", "Juguetes", "Oficina" }));
         CategoriaCombo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 CategoriaComboActionPerformed(evt);
@@ -228,7 +228,7 @@ public class VentanaCliente extends JFrame implements Runnable, Observer {
             }
         });
 
-        CategoriaCombo2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { }));
+        CategoriaCombo2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Lacteos", "Abarrotes", "Libros", "Herramientas", "Juguetes", "Oficina" }));
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
