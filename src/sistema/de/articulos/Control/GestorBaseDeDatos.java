@@ -13,17 +13,21 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Observable;
+import sistema.de.artícuos.Vista.Articulo;
 
 /**
  *
  * @author Gonzalo
  */
-public class GestorBaseDeDatos {
+public class GestorBaseDeDatos extends Observable{
        Connection cnx = null;
 
         String url = "jdbc:mysql://localhost:3306/modeloprueba";
         String user = "root";
         String password = "root";
+        private ArrayList <Articulo> lista;
 
         
         public void agregar(String nombre, String descripcion, String categoria, int precio, int cantidad)throws Exception {
@@ -50,48 +54,134 @@ public class GestorBaseDeDatos {
             throw new Exception();
         }
 
-        GestorBD.obtenerInstancia().cerrarConexion();
-            
+          Statement stmm = cnx.createStatement();
+          ResultSet rs = stmm.executeQuery("SELECT * FROM ; ");
+          while(rs.next()) {
+               
+                
+                String catego = rs.getString("categoria");
+              
+                  String nomb = rs.getString("nombre");  
+                  int canti = rs.getInt("cantidad");
+                  int prec = rs.getInt("precio"); 
+                  String descri = rs.getString("descripcion"); 
+                   Articulo arti=new Articulo(nomb,descri,catego,prec,canti,0);
+                   lista.add(arti);
+                }
+        
+        try {
+            cnx.close();
+        } catch (Exception exc) {
+        } finally {
+            cnx = null;
+        }
+           
+        this.setChanged();
+        this.notifyObservers();
+        
             
         }
-        try {
-            cnx = DriverManager.getConnection(
-                    url, user, password);
-
-            String cmd = "SELECT * FROM usuarios; ";
+        
+        public void consultar(String cate) throws Exception{                  
+       
+             try {
+            cnx = DriverManager.getConnection( url , user , password);
+        } catch (Exception exc) {
+            throw exc;
+        } finally {
+        }
+            
             Statement stm = cnx.createStatement();
             
             // Contiene los datos recuperados.
-            
-            ResultSet rs = stm.executeQuery(cmd);
-            
-            // Contiene información sobre los datos
-            // recuperados, NO contiene los datos.
-            
-            ResultSetMetaData md = rs.getMetaData();
-            System.out.println(
-                    "Los datos recuperados contienen " +
-                    md.getColumnCount() +
-                    " columnas.");
-            
-            while(rs.next()) {
-                int id = rs.getInt("id");
-                String login = rs.getString("login");
-                String nombre = rs.getString("nombre");
-                Date uAcceso = rs.getDate("ultimoAcceso");
+            ResultSet rs = stm.executeQuery("SELECT * FROM ; ");
+        while(rs.next()) {
+               
                 
-                System.out.println(String.format(
-                        "%d\t%s\t%s\t%s",
-                        id,login,nombre,uAcceso.toString()));
+                String categoria = rs.getString("categoria");
+                if(categoria.equals(cate)){
+                  String nombre = rs.getString("nombre");  
+                  int cantidad = rs.getInt("cantidad");
+                  int precio = rs.getInt("precio"); 
+                  String descripcion = rs.getString("descripcion"); 
+                   Articulo arti=new Articulo(nombre,descripcion,categoria,precio,cantidad,0);
+                   lista.add(arti);
+                }
+               
+                
+              
             }
             
 
+      try {
+            cnx.close();
         } catch (Exception exc) {
         } finally {
-            try {
-                cnx.close();
-            } catch (SQLException ioe) {
-            }
+            cnx = null;
         }
+     this.setChanged();
+     this.notifyObservers();
+     }
+        
+    public ArrayList<Articulo> getLista() {
+        return lista;
     }
+        
+    public void eliminar(String cat) throws Exception{
+               
+               try {
+            cnx = DriverManager.getConnection( url , user , password);
+                   } 
+               catch (Exception exc) {
+            throw exc;
+                   } 
+               finally {
+                }
+            
+            Statement stm = cnx.createStatement();
+            
+            // Contiene los datos recuperados.
+            ResultSet rs = stm.executeQuery("SELECT * FROM ; ");
+            int cont=0;
+            while(rs.next()) {
+
+                String categoria = rs.getString("categoria");
+                if(categoria.equals(cat)){
+                  cont++;
+                }
+                } 
+              if(cont!=0){
+                 PreparedStatement stmm =
+                cnx.prepareStatement("DELETE FROM  "
+                + "WHERE categoria=?; ");
+                    stmm.clearParameters();
+                stmm.setString(1, cat);
+                if (stmm.executeUpdate() != 1) {
+                    throw new Exception();
+                 }    
+                }
+            Statement stmmm = cnx.createStatement();
+          ResultSet rss = stmmm.executeQuery("SELECT * FROM ; ");
+          while(rss.next()) {
+               
+                
+                String catego = rs.getString("categoria");
+              
+                  String nomb = rs.getString("nombre");  
+                  int canti = rs.getInt("cantidad");
+                  int prec = rs.getInt("precio"); 
+                  String descri = rs.getString("descripcion"); 
+                   Articulo arti=new Articulo(nomb,descri,catego,prec,canti,0);
+                   lista.add(arti);
+                }
+     
+    try {
+            cnx.close();
+        } catch (Exception exc) {
+        } finally {
+            cnx = null;
+        }    
+        this.setChanged();
+     this.notifyObservers();
+}
 }

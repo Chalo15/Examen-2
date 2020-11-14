@@ -17,7 +17,7 @@ import sistema.de.articulos.Control.GestorCliente;
  *
  * @author USER
  */
-public class Servidor extends Observable {
+public class Servidor  {
     
     public static void main(String[] args) {
         Servidor a = new Servidor();
