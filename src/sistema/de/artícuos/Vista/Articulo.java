@@ -5,6 +5,8 @@
  */
 package sistema.de.artícuos.Vista;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Gonzalo
@@ -13,6 +15,7 @@ public class Articulo {
      private String nombre, descripcion,categoria;
     private int precio, cantidad;
     int banderaOpcion;
+    private ArrayList <Articulo> lista = null;
 
     public Articulo(String nombre, String descripcion, String categoria, int precio, int cantidad, int banderaOpcion) {
         this.nombre = nombre;
@@ -69,6 +72,13 @@ public class Articulo {
 
     public void setBanderaOpcion(int banderaOpcion) {
         this.banderaOpcion = banderaOpcion;
+    }
+
+    public ArrayList<Articulo> getLista() {
+        return lista;
+    }
+    public void InsertarLista(Articulo a){
+        lista.add(a);
     }
 
     @Override

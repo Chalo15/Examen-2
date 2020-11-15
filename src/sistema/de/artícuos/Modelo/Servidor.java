@@ -11,13 +11,14 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Observable;
+import sistema.de.articulos.Control.GestorBaseDeDatos;
 import sistema.de.articulos.Control.GestorCliente;
 
 /**
  *
  * @author USER
  */
-public class Servidor  {
+public class Servidor extends Observable {
     
     public static void main(String[] args) {
         Servidor a = new Servidor();
@@ -27,6 +28,7 @@ public class Servidor  {
     public Servidor(){
         clientes = new ArrayList<>();
         numCliente = 0;
+        base = new GestorBaseDeDatos();
     }
 
     public void iniciar() {
@@ -84,6 +86,24 @@ public class Servidor  {
         }
         
     }
+    public void agregar(String nombre, String descripcion, String categoria, int precio, int cantidad) throws Exception{
+        base.agregar(nombre, descripcion, categoria, precio, cantidad);   
+        
+        this.setChanged();
+        this.notifyObservers();
+    }
+    public void consultar(String c) throws Exception{
+        base.consultar(c);  
+        
+        this.setChanged();
+        this.notifyObservers();
+    }
+    public void eliminar(String c) throws Exception{
+        base.eliminar(c);
+                   
+        this.setChanged();
+        this.notifyObservers();
+    }
     
     //Atributos
     private ServerSocket srv;
@@ -92,5 +112,5 @@ public class Servidor  {
     private Thread hiloCliente;
     private ArrayList<GestorCliente> clientes;
     private int numCliente;
-    
+    private GestorBaseDeDatos base;
 }

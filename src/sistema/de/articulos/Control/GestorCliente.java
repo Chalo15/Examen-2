@@ -12,6 +12,7 @@ import java.io.ObjectOutputStream;
 //import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.Observer;
 //import java.util.Scanner;
 import sistema.de.artícuos.Modelo.Servidor;
 import sistema.de.artícuos.Vista.Articulo;
@@ -29,6 +30,10 @@ public class GestorCliente implements Runnable{
         }
         direccionCliente = sktCliente.getInetAddress();
         nCliente = num; 
+    }
+    
+    public void agregarObservador(Observer ob){
+        gestorPrincipal.addObserver(ob);
     }
 
     @Override
@@ -58,20 +63,20 @@ public class GestorCliente implements Runnable{
                 int opc=art.getBanderaOpcion();
                 switch(opc){
                     case 1:
-                     //meter los datos a la base de datos   
-                     break;
+                        gestorPrincipal.agregar(art.getNombre(), art.getDescripcion(), art.getCategoria(), art.getPrecio(), art.getCantidad());
+                        break;
                     case 2:
-                        //filtrar las categorias y retornar la wea
+                        gestorPrincipal.consultar(art.getCategoria());
                         break;
                     case 3:
-                        //eliminar
+                        gestorPrincipal.eliminar(art.getCategoria());
                         break;
                 }
                    
                 try{
                     //llamo metdo que actualiza la matriz desde la base de datos y luego la retorno
-             salida.writeObject(this);
-            salida.flush();
+                salida.writeObject("Ok");
+                salida.flush();
             }
             catch(Exception ex){
                 ex.printStackTrace();
@@ -111,8 +116,6 @@ public class GestorCliente implements Runnable{
     private InetAddress direccionCliente;
     private Socket sktCliente;
     private ObjectInputStream entrada;
-    private ObjectOutputStream salida;
-    //private BufferedInputStream entrada;
-    //private PrintWriter salida;   
+    private ObjectOutputStream salida;  
     private final int nCliente;
 }

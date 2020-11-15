@@ -5,17 +5,15 @@
  */
 package sistema.de.artícuos.Vista;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Observer;
-import java.util.Scanner;
-import javafx.beans.InvalidationListener;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.ListSelectionModel;
 
 
 
@@ -27,19 +25,19 @@ public class VentanaCliente extends JFrame implements Runnable, Observer {
     private Thread hiloCliente;
     private ObjectInputStream entrada;
     private ObjectOutputStream salida;
-    //private PrintWriter salida;
-    //private BufferedInputStream entrada;
     private Socket sok;
     private String nombre, descripcion,categoria;
     private int precio, cantidad;
     int banderaOpcion;
     private Articulo articulo;
+    private String [] nameColums = {"Categoria", "Articulo", "Cantidad", "Precio", "Descripcion"};
 
     /**
      * Creates new form Cliente
      */
     public VentanaCliente() {
         initComponents();
+        jTable1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     
         hiloCliente = new Thread(this);
         if(hiloCliente!=null){
@@ -305,12 +303,11 @@ public class VentanaCliente extends JFrame implements Runnable, Observer {
         else { 
             try {
                 nombre= NombreTxt.getText();
-            descripcion=DescripcionTxt.getText();
-            precio=Integer.parseInt(PrecioTxt.getText());
-            cantidad=Integer.parseInt(CantidadTxt.getText());
-            categoria=String.valueOf(CategoriaCombo.getSelectedItem()); 
-            banderaOpcion=1;
-           // String s = String.valueOf(1);
+                descripcion=DescripcionTxt.getText();
+                precio=Integer.parseInt(PrecioTxt.getText());
+                cantidad=Integer.parseInt(CantidadTxt.getText());
+                categoria=String.valueOf(CategoriaCombo.getSelectedItem()); 
+                banderaOpcion=1;
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, "Favor de ingresar un valor numérico en las casillas de precio y cantidad","Error",JOptionPane.ERROR_MESSAGE);
             }
@@ -339,19 +336,43 @@ public class VentanaCliente extends JFrame implements Runnable, Observer {
     }//GEN-LAST:event_NombreTxtActionPerformed
 
     private void FiltarBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_FiltarBtnActionPerformed
-        // TODO add your handling code here:
-        String s = String.valueOf(2);
-        System.out.println("Enviando datos al servidor: " + s);
-       // salida.println(s);
-        //salida.flush();
+        if(jTable1.getSelectedRow()==-1 || articulo.getLista()==null){
+            JOptionPane.showMessageDialog(null, "Ingresar un articulo o marcar uno de la lista que aparece");
+        }
+        else{
+            categoria=String.valueOf(CategoriaCombo2.getSelectedItem()); 
+            banderaOpcion=2;
+
+            articulo = new Articulo("","",categoria,0,0,banderaOpcion);
+            System.out.println("Enviando datos al servidor: ");
+            try{
+                salida.writeObject(articulo);
+                salida.flush();
+            }
+            catch(Exception ex){
+                ex.printStackTrace();
+            }
+        }       
     }//GEN-LAST:event_FiltarBtnActionPerformed
 
     private void EliminarbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EliminarbtnActionPerformed
-        // TODO add your handling code here:
-        String s = String.valueOf(3);
-        System.out.println("Enviando datos al servidor: " + s);
-        //salida.println(s);
-        //salida.flush();
+        if(jTable1.getSelectedRow()==-1 || articulo.getLista()==null){
+            JOptionPane.showMessageDialog(null, "Ingresar un articulo o marcar uno de la lista que aparece");
+        }
+        else{
+            categoria=String.valueOf(CategoriaCombo2.getSelectedItem()); 
+            banderaOpcion=3;
+
+            articulo=new Articulo("","",categoria,0,0,banderaOpcion);
+            System.out.println("Enviando datos al servidor: ");
+            try{
+                salida.writeObject(articulo);
+                salida.flush();
+            }
+            catch(Exception ex){
+                ex.printStackTrace();
+            }           
+        }       
     }//GEN-LAST:event_EliminarbtnActionPerformed
 
     /**
@@ -448,13 +469,19 @@ public class VentanaCliente extends JFrame implements Runnable, Observer {
 
     @Override
     public void update(java.util.Observable o, Object o1) {
+        ArrayList<Articulo> arti = new ArrayList<Articulo>(articulo.getLista());
         
+        String mat[][]=new String[arti.size()][5];
+        for(int i=0;i<arti.size();i++){
+               mat[i][0]= arti.get(i).getCategoria();
+               mat[i][1] = arti.get(i).getNombre();
+               mat[i][2] = Integer.toString(arti.get(i).getCantidad());
+               mat[i][3] = Integer.toString(arti.get(i).getPrecio());
+               mat[i][4] = arti.get(i).getDescripcion();
+        }
         
-        //llenar la tabla y los combo box con la info del server
-        
-        
-        
-        
-        
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+                        mat, nameColums
+        ));            
     }
 }
