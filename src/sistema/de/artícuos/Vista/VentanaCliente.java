@@ -308,19 +308,20 @@ public class VentanaCliente extends JFrame implements Runnable, Observer {
                 cantidad=Integer.parseInt(CantidadTxt.getText());
                 categoria=String.valueOf(CategoriaCombo.getSelectedItem()); 
                 banderaOpcion=1;
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, "Favor de ingresar un valor numérico en las casillas de precio y cantidad","Error",JOptionPane.ERROR_MESSAGE);
-            }
-            
-            articulo=new Articulo(nombre,descripcion,categoria,precio,cantidad,banderaOpcion);
+                 articulo=new Articulo(nombre,descripcion,categoria,precio,cantidad,banderaOpcion);
             System.out.println("Enviando datos al servidor: ");
             try{
             salida.writeObject(articulo);
-            salida.flush();
+            //salida.flush();
+            
             }
             catch(Exception ex){
                 ex.printStackTrace();
             }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Favor de ingresar un valor numérico en las casillas de precio y cantidad","Error",JOptionPane.ERROR_MESSAGE);
+            }
+            
             
             //salida.println(s);//se envia el obejto articulo
             //salida.flush();           
