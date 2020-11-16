@@ -17,13 +17,16 @@ import java.util.Observer;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
+import sistema.de.articulos.Control.GestorBaseDeDatos;
+import sistema.de.articulos.Control.GestorCliente;
+import sistema.de.artícuos.Modelo.Servidor;
 
 /**
  *
  * @author Gonzalo
  */
-public class Ventana  extends JFrame implements Runnable, Observer{
-     private Thread hiloCliente = null;
+public class Ventana  extends JFrame implements Runnable{
+    private Thread hiloCliente = null;
     private ObjectInputStream entrada;
     private ObjectOutputStream salida;
     private Socket sok;
@@ -52,8 +55,10 @@ public class Ventana  extends JFrame implements Runnable, Observer{
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JTable jTable1;
+    //private GestorCliente gestor=new GestorCliente(this);
     public Ventana(){
         super("Examen 2");
+       
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(600,400);
         this.setLocationRelativeTo(null);
@@ -276,9 +281,9 @@ public static void main(String[] args) {
             try{
                 if(salida!=null){
                     salida.writeObject(articulo);
+                    salida.flush();
                 }
-                //salida.writeObject(articulo);
-                //salida.flush();
+                ;
             
             }
             catch(Exception ex){
@@ -289,8 +294,7 @@ public static void main(String[] args) {
             }
             
             
-            //salida.println(s);//se envia el obejto articulo
-            //salida.flush();           
+                     
         }   
             }
         });
@@ -362,24 +366,21 @@ public static void main(String[] args) {
             while (hiloCliente == Thread.currentThread()){
                 
                 // Espera la respuesta..
-                //String c = srv.nextLine();
-                String c = entrada.readObject().toString();
-                System.out.println("Confirmación: " + c);
-            }
-                       
-        } catch (IOException e) {
-            System.err.println("Ocurrio un error con la entrada de datos ... ");
-        }catch (Exception e) {
-            System.err.println(" Ocurrio un error con la respuesta del servidor ...");
+                //String c = srv.nextLine(); llenar la tabla
+                Servidor serv=null;
+                 try{
+                      serv=(Servidor)entrada.readObject();
+                  }
+                   catch (ClassNotFoundException ex) {
+                    
+                } 
+                  catch (IOException ex) {
+            System.err.println(ex.getMessage());
         }
-    }
-
-    @Override
-    public void update(Observable o, Object o1) {
-
-        ArrayList<Articulo> arti = new ArrayList<Articulo>(articulo.getLista());
-        
-        String mat[][]=new String[arti.size()][5];
+                
+                 
+                   ArrayList<Articulo> arti = serv.getBase().getAr().getLista();
+                    String mat[][]=new String[arti.size()][5];
         for(int i=0;i<arti.size();i++){
                mat[i][0]= arti.get(i).getCategoria();
                mat[i][1] = arti.get(i).getNombre();
@@ -390,8 +391,22 @@ public static void main(String[] args) {
         
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
                         mat, nameColums
-        ));            
+        ));        
+                 
+                
+            }
+                       
+        } catch (IOException e) {
+            System.err.println("Ocurrio un error con la entrada de datos ... ");
+        }catch (Exception e) {
+            System.err.println(" Ocurrio un error con la respuesta del servidor ...");
+        }
     }
+
+    
+    
+    
+    
     
     
     

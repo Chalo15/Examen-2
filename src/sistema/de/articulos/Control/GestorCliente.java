@@ -9,11 +9,9 @@ package sistema.de.articulos.Control;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-//import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Observer;
-//import java.util.Scanner;
 import sistema.de.artícuos.Modelo.Servidor;
 import sistema.de.artícuos.Vista.Articulo;
 
@@ -22,7 +20,8 @@ import sistema.de.artícuos.Vista.Articulo;
  * @author USER
  */
 public class GestorCliente implements Runnable{
-    
+
+  
     public GestorCliente(Servidor gestor, Socket skt, int num) {
         gestorPrincipal = gestor;
         if(skt!=null){
@@ -32,9 +31,6 @@ public class GestorCliente implements Runnable{
         nCliente = num; 
     }
     
-    public void agregarObservador(Observer ob){
-        gestorPrincipal.addObserver(ob);
-    }
 
     @Override
     public void run() {
@@ -74,8 +70,9 @@ public class GestorCliente implements Runnable{
                 }
                    
                 try{
-                    //llamo metdo que actualiza la matriz desde la base de datos y luego la retorno
-                salida.writeObject("Ok");
+                    
+                    
+                salida.writeObject(gestorPrincipal);
                 salida.flush();
             }
             catch(Exception ex){

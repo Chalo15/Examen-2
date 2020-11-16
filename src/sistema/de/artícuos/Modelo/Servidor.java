@@ -18,7 +18,7 @@ import sistema.de.articulos.Control.GestorCliente;
  *
  * @author USER
  */
-public class Servidor extends Observable {
+public class Servidor  {
     
     public static void main(String[] args) {
         Servidor a = new Servidor();
@@ -89,20 +89,21 @@ public class Servidor extends Observable {
     public void agregar(String nombre, String descripcion, String categoria, int precio, int cantidad) throws Exception{
         base.agregar(nombre, descripcion, categoria, precio, cantidad);   
         
-        this.setChanged();
-        this.notifyObservers();
+      
     }
     public void consultar(String c) throws Exception{
         base.consultar(c);  
         
-        this.setChanged();
-        this.notifyObservers();
+   
     }
     public void eliminar(String c) throws Exception{
         base.eliminar(c);
                    
-        this.setChanged();
-        this.notifyObservers();
+   
+    }
+
+    public GestorBaseDeDatos getBase() {
+        return base;
     }
     
     //Atributos
