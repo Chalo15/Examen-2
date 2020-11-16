@@ -29,7 +29,7 @@ public class GestorBaseDeDatos{
 
         url = "jdbc:mysql://localhost:3306/inventario";
         user = "root";
-        password = "root";
+        password = "sqldepablo99";
     }
 
         

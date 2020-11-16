@@ -14,6 +14,7 @@ import java.util.Observer;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
+import sistema.de.artícuos.Modelo.Servidor;
 
 
 
@@ -22,7 +23,7 @@ import javax.swing.ListSelectionModel;
  * @author Gonzalo
  */
 public class VentanaCliente extends JFrame implements Runnable, Observer {
-    private Thread hiloCliente;
+    private Thread hiloCliente = null;
     private ObjectInputStream entrada;
     private ObjectOutputStream salida;
     private Socket sok;
@@ -36,6 +37,7 @@ public class VentanaCliente extends JFrame implements Runnable, Observer {
      * Creates new form Cliente
      */
     public VentanaCliente() {
+        super("Examen 2");
         initComponents();
         jTable1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     
@@ -43,6 +45,70 @@ public class VentanaCliente extends JFrame implements Runnable, Observer {
         if(hiloCliente!=null){
             hiloCliente.start();
         }
+    }
+    
+    @Override
+    public void run() {
+        int puerto = 1234;
+        String servidor = "localhost";
+        
+        try{          
+            sok = new Socket(servidor, puerto);
+            entrada = new ObjectInputStream(sok.getInputStream());
+            salida = new ObjectOutputStream(sok.getOutputStream());
+            System.out.print("Entre al run");
+           
+            while (hiloCliente == Thread.currentThread()){
+                
+                // Espera la respuesta..
+                //String c = srv.nextLine();
+                String c = entrada.readObject().toString();
+                System.out.println("Confirmación: " + c);
+            }
+                       
+        } catch (IOException e) {
+            System.err.println("Ocurrio un error con la entrada de datos ... ");
+        }catch (Exception e) {
+            System.err.println(" Ocurrio un error con la respuesta del servidor ...");
+        }
+    }
+    
+    /**
+    * @param args the command line arguments
+    */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(VentanaCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(VentanaCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(VentanaCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(VentanaCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+        //</editor-fold>
+        
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                VentanaCliente ventana = new VentanaCliente();
+                ventana.setVisible(true);
+            }
+        });
     }
 
     /**
@@ -308,11 +374,14 @@ public class VentanaCliente extends JFrame implements Runnable, Observer {
                 cantidad=Integer.parseInt(CantidadTxt.getText());
                 categoria=String.valueOf(CategoriaCombo.getSelectedItem()); 
                 banderaOpcion=1;
-                 articulo=new Articulo(nombre,descripcion,categoria,precio,cantidad,banderaOpcion);
-            System.out.println("Enviando datos al servidor: ");
+                articulo=new Articulo(nombre,descripcion,categoria,precio,cantidad,banderaOpcion);
+                System.out.println("Enviando datos al servidor: ");
             try{
-            salida.writeObject(articulo);
-            //salida.flush();
+                if(salida!=null){
+                    salida.writeObject(articulo);
+                }
+                //salida.writeObject(articulo);
+                //salida.flush();
             
             }
             catch(Exception ex){
@@ -341,7 +410,7 @@ public class VentanaCliente extends JFrame implements Runnable, Observer {
             JOptionPane.showMessageDialog(null, "Ingresar un articulo o marcar uno de la lista que aparece");
         }
         else{
-            categoria=String.valueOf(CategoriaCombo2.getSelectedItem()); 
+            categoria=String.valueOf(CategoriaCombo2.getSelectedItem());
             banderaOpcion=2;
 
             articulo = new Articulo("","",categoria,0,0,banderaOpcion);
@@ -375,43 +444,25 @@ public class VentanaCliente extends JFrame implements Runnable, Observer {
             }           
         }       
     }//GEN-LAST:event_EliminarbtnActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(VentanaCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(VentanaCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(VentanaCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(VentanaCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    
+    @Override
+    public void update(java.util.Observable o, Object o1) {
+        ArrayList<Articulo> arti = new ArrayList<Articulo>(articulo.getLista());
+        
+        String mat[][]=new String[arti.size()][5];
+        for(int i=0;i<arti.size();i++){
+               mat[i][0]= arti.get(i).getCategoria();
+               mat[i][1] = arti.get(i).getNombre();
+               mat[i][2] = Integer.toString(arti.get(i).getCantidad());
+               mat[i][3] = Integer.toString(arti.get(i).getPrecio());
+               mat[i][4] = arti.get(i).getDescripcion();
         }
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new VentanaCliente().setVisible(true);
-            }
-        });
+        
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+                        mat, nameColums
+        ));            
     }
-
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField CantidadTxt;
     private javax.swing.JComboBox<String> CategoriaCombo;
@@ -435,54 +486,4 @@ public class VentanaCliente extends JFrame implements Runnable, Observer {
     private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
 
-    @Override
-    public void run() {
-        int puerto = 1234;
-        String servidor = "localhost";
-        
-        try{
-           
-            sok = new Socket(servidor, puerto);
-            entrada = new ObjectInputStream(sok.getInputStream());
-            salida = new ObjectOutputStream(sok.getOutputStream());
-           /* salida = new PrintWriter(sok.getOutputStream());
-            entrada =
-                    new BufferedInputStream(sok.getInputStream());
-            Scanner srv = new Scanner(entrada);
-            */
-            while (hiloCliente == Thread.currentThread()){
-                
-                // Espera la respuesta..
-                //String c = srv.nextLine();
-                String c = entrada.readObject().toString();
-                System.out.println("Confirmación: " + c);
-            }
-            
-            
-        } catch (IOException e) {
-            System.err.println("Ocurrio un error con la entrada de datos ... ");
-        }catch (Exception e) {
-            System.err.println(" Ocurrio un error con la respuesta del servidor ...");
-        }
-    }
-
-    
-
-    @Override
-    public void update(java.util.Observable o, Object o1) {
-        ArrayList<Articulo> arti = new ArrayList<Articulo>(articulo.getLista());
-        
-        String mat[][]=new String[arti.size()][5];
-        for(int i=0;i<arti.size();i++){
-               mat[i][0]= arti.get(i).getCategoria();
-               mat[i][1] = arti.get(i).getNombre();
-               mat[i][2] = Integer.toString(arti.get(i).getCantidad());
-               mat[i][3] = Integer.toString(arti.get(i).getPrecio());
-               mat[i][4] = arti.get(i).getDescripcion();
-        }
-        
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-                        mat, nameColums
-        ));            
-    }
 }
