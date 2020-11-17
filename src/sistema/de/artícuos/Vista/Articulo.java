@@ -16,6 +16,10 @@ public class Articulo {
     private int precio, cantidad;
     int banderaOpcion;
     private ArrayList <Articulo> lista = null;
+    
+    public Articulo(){
+        banderaOpcion = 0;
+    }
 
     public Articulo(String nombre, String descripcion, String categoria, int precio, int cantidad, int banderaOpcion) {
         this.nombre = nombre;

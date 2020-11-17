@@ -7,29 +7,19 @@ package sistema.de.artícuos.Vista;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
-import sistema.de.articulos.Control.GestorBaseDeDatos;
-import sistema.de.articulos.Control.GestorCliente;
-import sistema.de.artícuos.Modelo.Servidor;
+import sistema.de.articulos.Control.ClienteSocket;
 
 /**
  *
  * @author Gonzalo
  */
-public class Ventana  extends JFrame implements Runnable{
-    private Thread hiloCliente = null;
-    private ObjectInputStream entrada;
-    private ObjectOutputStream salida;
-    private Socket sok;
+public class Ventana  extends JFrame {
+    private Thread hilito;
+    private ClienteSocket cli;
     private String nombre, descripcion,categoria;
     private int precio, cantidad;
     int banderaOpcion;
@@ -56,26 +46,47 @@ public class Ventana  extends JFrame implements Runnable{
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JTable jTable1;
     //private GestorCliente gestor=new GestorCliente(this);
+    
     public Ventana(){
         super("Examen 2");
+        cli = new ClienteSocket(this);
+        conexion();
        
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(600,400);
         this.setLocationRelativeTo(null);
         this.setResizable(false);
         iniciarComponentes();
-        jTable1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        jTable1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);       
+    }
     
-        hiloCliente = new Thread(this);
-        if(hiloCliente!=null){
-            hiloCliente.start();
+    public void conexion(){
+        hilito = new Thread(cli);
+        if(hilito!=null){
+            hilito.start();
         }
     }
-public static void main(String[] args) {
+    public void actualizarTabla(ArrayList<Articulo> v){
+        ArrayList<Articulo> arti = v;
+        String mat[][]=new String[arti.size()][5];
+        for(int i=0;i<arti.size();i++){
+            mat[i][0]= arti.get(i).getCategoria();
+            mat[i][1] = arti.get(i).getNombre();
+            mat[i][2] = Integer.toString(arti.get(i).getCantidad());
+            mat[i][3] = Integer.toString(arti.get(i).getPrecio());
+            mat[i][4] = arti.get(i).getDescripcion();
+        }
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+                        mat, nameColums
+        ));
+    }
     
-     Ventana ventana = new Ventana();
-     ventana.setVisible(true);
-}
+    public static void main(String[] args) {
+         Ventana ventana = new Ventana();
+         ventana.setVisible(true);
+    }
+    
     public void iniciarComponentes(){
         jSplitPane1 = new javax.swing.JSplitPane();
         jPanel1 = new javax.swing.JPanel();
@@ -265,37 +276,26 @@ public static void main(String[] args) {
         GuardarBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-               if(NombreTxt.getText().length()==0||DescripcionTxt.getText().length()==0||PrecioTxt.getText().length()==0||CantidadTxt.getText().length()==0||CategoriaCombo.getSelectedIndex()==-1){
-            JOptionPane.showMessageDialog(null, "Has dejado uno o mas campos sin llenar");
-        }
-        else { 
-            try {
-                nombre= NombreTxt.getText();
-                descripcion=DescripcionTxt.getText();
-                precio=Integer.parseInt(PrecioTxt.getText());
-                cantidad=Integer.parseInt(CantidadTxt.getText());
-                categoria=String.valueOf(CategoriaCombo.getSelectedItem()); 
-                banderaOpcion=1;
-                articulo=new Articulo(nombre,descripcion,categoria,precio,cantidad,banderaOpcion);
-                System.out.println("Enviando datos al servidor: ");
-            try{
-                if(salida!=null){
-                    salida.writeObject(articulo);
-                    salida.flush();
+                if(NombreTxt.getText().length()==0||DescripcionTxt.getText().length()==0||PrecioTxt.getText().length()==0||CantidadTxt.getText().length()==0||CategoriaCombo.getSelectedIndex()==-1){
+                    JOptionPane.showMessageDialog(null, "Has dejado uno o mas campos sin llenar");
                 }
-                ;
-            
-            }
-            catch(Exception ex){
-                ex.printStackTrace();
-            }
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, "Favor de ingresar un valor numérico en las casillas de precio y cantidad","Error",JOptionPane.ERROR_MESSAGE);
-            }
-            
-            
-                     
-        }   
+                else { 
+                    try {
+                        nombre= NombreTxt.getText();
+                        descripcion=DescripcionTxt.getText();
+                        precio=Integer.parseInt(PrecioTxt.getText());
+                        cantidad=Integer.parseInt(CantidadTxt.getText());
+                        categoria=String.valueOf(CategoriaCombo.getSelectedItem()); 
+                        banderaOpcion=1;
+                        articulo=new Articulo(nombre,descripcion,categoria,precio,cantidad,banderaOpcion);
+                        System.out.println("Enviando datos al servidor: ");
+
+                    } catch (Exception e) {
+                        JOptionPane.showMessageDialog(null, "Favor de ingresar un valor numérico en las casillas de precio y cantidad","Error",JOptionPane.ERROR_MESSAGE);
+                    }
+                    cli.enviarAlServidor(articulo);
+
+                }   
             }
         });
         
@@ -312,13 +312,7 @@ public static void main(String[] args) {
 
             articulo = new Articulo("","",categoria,0,0,banderaOpcion);
             System.out.println("Enviando datos al servidor: ");
-            try{
-                salida.writeObject(articulo);
-                salida.flush();
-            }
-            catch(Exception ex){
-                ex.printStackTrace();
-            }
+            cli.enviarAlServidor(articulo);
         }       
             }
        });
@@ -327,87 +321,69 @@ public static void main(String[] args) {
             @Override
             public void actionPerformed(ActionEvent ae) {
                  if(jTable1.getSelectedRow()==-1 || articulo.getLista()==null){
-            JOptionPane.showMessageDialog(null, "Ingresar un articulo o marcar uno de la lista que aparece");
-        }
-        else{
-            categoria=String.valueOf(CategoriaCombo2.getSelectedItem()); 
-            banderaOpcion=3;
+                    JOptionPane.showMessageDialog(null, "Ingresar un articulo o marcar uno de la lista que aparece");
+                }
+                else{
+                    categoria=String.valueOf(CategoriaCombo2.getSelectedItem()); 
+                    banderaOpcion=3;
 
-            articulo=new Articulo("","",categoria,0,0,banderaOpcion);
-            System.out.println("Enviando datos al servidor: ");
-            try{
-                salida.writeObject(articulo);
-                salida.flush();
-            }
-            catch(Exception ex){
-                ex.printStackTrace();
-            }           
-        }       
+                    articulo=new Articulo("","",categoria,0,0,banderaOpcion);
+                    System.out.println("Enviando datos al servidor: ");
+                    cli.enviarAlServidor(articulo);
 
+                }       
             }
         });
         
     }
     
-    
-    
-    
-    @Override
-    public void run() {
-        int puerto = 1234;
-        String servidor = "localhost";
-        
-        try{          
-            sok = new Socket(servidor, puerto);
-            entrada = new ObjectInputStream(sok.getInputStream());
-            salida = new ObjectOutputStream(sok.getOutputStream());
-            System.out.print("Entre al run");
-           
-            while (hiloCliente == Thread.currentThread()){
-                
-                // Espera la respuesta..
-                //String c = srv.nextLine(); llenar la tabla
-                Servidor serv=null;
-                 try{
-                      serv=(Servidor)entrada.readObject();
-                  }
-                   catch (ClassNotFoundException ex) {
-                    
-                } 
-                  catch (IOException ex) {
-            System.err.println(ex.getMessage());
-        }
-                
-                 
-                   ArrayList<Articulo> arti = serv.getBase().getAr().getLista();
-                    String mat[][]=new String[arti.size()][5];
-        for(int i=0;i<arti.size();i++){
-               mat[i][0]= arti.get(i).getCategoria();
-               mat[i][1] = arti.get(i).getNombre();
-               mat[i][2] = Integer.toString(arti.get(i).getCantidad());
-               mat[i][3] = Integer.toString(arti.get(i).getPrecio());
-               mat[i][4] = arti.get(i).getDescripcion();
-        }
-        
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-                        mat, nameColums
-        ));        
-                 
-                
-            }
-                       
-        } catch (IOException e) {
-            System.err.println("Ocurrio un error con la entrada de datos ... ");
-        }catch (Exception e) {
-            System.err.println(" Ocurrio un error con la respuesta del servidor ...");
-        }
-    }
-
-    
-    
-    
-    
-    
-    
-    
+//    public void IniciarHilo() {
+//        int puerto = 1234;
+//        String servidor = "localhost";
+//        
+//        try{          
+//            sok = new Socket(servidor, puerto);
+//            entrada = new ObjectInputStream(sok.getInputStream());
+//            salida = new ObjectOutputStream(sok.getOutputStream());
+//            System.out.print("Entre al run");
+//           
+//            while (hilito == Thread.currentThread()){
+//                
+//                // Espera la respuesta..
+//                //String c = srv.nextLine(); llenar la tabla
+//                Servidor serv=null;
+//                 try{
+//                      serv = (Servidor)entrada.readObject();
+//                  }
+//                   catch (ClassNotFoundException ex) {
+//                    
+//                } 
+//                catch (IOException ex) {
+//                    System.err.println(ex.getMessage());
+//                }
+//                
+//                 
+//                ArrayList<Articulo> arti = serv.getBase().getAr().getLista();
+//                String mat[][]=new String[arti.size()][5];
+//                for(int i=0;i<arti.size();i++){
+//                    mat[i][0]= arti.get(i).getCategoria();
+//                    mat[i][1] = arti.get(i).getNombre();
+//                    mat[i][2] = Integer.toString(arti.get(i).getCantidad());
+//                    mat[i][3] = Integer.toString(arti.get(i).getPrecio());
+//                    mat[i][4] = arti.get(i).getDescripcion();
+//                }
+//        
+//                jTable1.setModel(new javax.swing.table.DefaultTableModel(
+//                                mat, nameColums
+//                ));        
+//                 
+//                
+//            }
+//                       
+//        } catch (IOException e) {
+//            System.err.println("Ocurrio un error con la entrada de datos ... ");
+//        }catch (Exception e) {
+//            System.err.println(" Ocurrio un error con la respuesta del servidor ...");
+//        }
+//    }       
 }

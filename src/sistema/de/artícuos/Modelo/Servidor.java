@@ -10,7 +10,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
-import java.util.Observable;
 import sistema.de.articulos.Control.GestorBaseDeDatos;
 import sistema.de.articulos.Control.GestorCliente;
 

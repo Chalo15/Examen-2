@@ -11,7 +11,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.Observer;
 import sistema.de.artícuos.Modelo.Servidor;
 import sistema.de.artícuos.Vista.Articulo;
 
@@ -40,24 +39,22 @@ public class GestorCliente implements Runnable{
 
             
             while(true) {//extraigo la info del objeto
-                  String c = entrada.readObject().toString();
-                  Articulo art=null;
-                  try{
-                      art=(Articulo)entrada.readObject();
-                  }
-                   catch (ClassNotFoundException ex) {
-                    
+                //String c = entrada.readObject().toString();
+                Articulo art=null;
+                try{
+                    art = (Articulo)entrada.readObject();
+                }
+                catch (ClassNotFoundException ex) {                  
                 } 
-                  catch (IOException ex) {
-            System.err.println(ex.getMessage());
-        }
-          
-                System.out.println("Línea recibida del Cliente#" + nCliente + ": " + c);
-                
-                
-                
+                catch (IOException ex) {
+                    System.err.println(ex.getMessage());
+                }
+
                 int opc=art.getBanderaOpcion();
+                
                 switch(opc){
+                    case 0:
+                        break;
                     case 1:
                         gestorPrincipal.agregar(art.getNombre(), art.getDescripcion(), art.getCategoria(), art.getPrecio(), art.getCantidad());
                         break;
@@ -70,11 +67,10 @@ public class GestorCliente implements Runnable{
                 }
                    
                 try{
-                    
-                    
-                salida.writeObject(gestorPrincipal);
-                salida.flush();
-            }
+                       
+                    salida.writeObject(gestorPrincipal.getBase().getAr().getLista());
+                    salida.flush();
+                }
             catch(Exception ex){
                 ex.printStackTrace();
             }
@@ -107,8 +103,7 @@ public class GestorCliente implements Runnable{
         return String.format(
                 "Cliente@%s", direccionCliente.getHostName(),nCliente);
     }
-    
-    
+ 
     private Servidor gestorPrincipal;
     private InetAddress direccionCliente;
     private Socket sktCliente;
