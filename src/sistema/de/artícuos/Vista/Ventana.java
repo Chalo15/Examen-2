@@ -74,21 +74,40 @@ public class Ventana extends JFrame {
     }
 
     public void actualizarTabla(String v) {
+ //String[] obj = v.split(";");
+      //  for (String prod : obj) {
+          //  String[] produc = prod.split("_");
+//            Object[] vec = new Object[5];
+//            vec[0] = produc[0];
+//            vec[1] = produc[1];
+//            vec[2] = produc[2];
+//            vec[3] = produc[3];
+//            vec[5] = produc[5];
+//
+//            Tarticulo.addRow(vec);
+//        }
         String[] obj = v.split(";");
-        for (String prod : obj) {
+        String mat[][] = new String[obj.length][5];
+        int cont=0;
+        for (String prod :  obj) {
             String[] produc = prod.split("_");
-            Object[] vec = new Object[5];
-            vec[0] = produc[0];
-            vec[1] = produc[1];
-            vec[2] = produc[2];
-            vec[3] = produc[3];
-            vec[5] = produc[5];
-            
-            Tarticulo.addRow(vec);
+                    mat[cont][0]= produc[0];
+                    mat[cont][1] = produc[1];
+                    mat[cont][2] = produc[2];
+                    mat[cont][3] = produc[3];
+                    mat[cont][4] = produc[4];
+                    cont++;
         }
+        
+                jTable1.setModel(new javax.swing.table.DefaultTableModel(
+                                mat, nameColums
+                ));        
+                 
+                
+            
 
-        Tarticulo.addColumn(nameColums);
-        jTable1.setModel(Tarticulo);
+        //Tarticulo.addColumn(nameColums);
+        //jTable1.setModel(Tarticulo);
     }
 
     public static void main(String[] args) {
@@ -285,9 +304,9 @@ public class Ventana extends JFrame {
         GuardarBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-                try{
+                try {
                     Thread.sleep(1000);
-                }catch(InterruptedException ex){
+                } catch (InterruptedException ex) {
                     Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 if (NombreTxt.getText().length() == 0 || DescripcionTxt.getText().length() == 0 || PrecioTxt.getText().length() == 0 || CantidadTxt.getText().length() == 0 || CategoriaCombo.getSelectedIndex() == -1) {
@@ -317,26 +336,24 @@ public class Ventana extends JFrame {
         FiltarBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-                if (jTable1.getSelectedRow() == -1 || articulo.getLista() == null) {
-                    JOptionPane.showMessageDialog(null, "Ingresar un articulo o marcar uno de la lista que aparece");
-                } else {
+//               
                     categoria = String.valueOf(CategoriaCombo2.getSelectedItem());
                     banderaOpcion = 2;
                     artic = banderaOpcion + "_" + categoria;
 
-                    //articulo = new Articulo("","",categoria,0,0,banderaOpcion);
+                    
                     System.out.println("Enviando datos al servidor: ");
                     cli.enviarAlServidor(artic);
-                }
+                
             }
         });
 
         Eliminarbtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-                if (jTable1.getSelectedRow() == -1 || articulo.getLista() == null) {
-                    JOptionPane.showMessageDialog(null, "Ingresar un articulo o marcar uno de la lista que aparece");
-                } else {
+//                if (jTable1.getSelectedRow() == -1 || articulo.getLista() == null) {
+//                    JOptionPane.showMessageDialog(null, "Ingresar un articulo o marcar uno de la lista que aparece");
+//                } else {
                     categoria = String.valueOf(CategoriaCombo2.getSelectedItem());
                     banderaOpcion = 3;
                     artic = banderaOpcion + "_" + categoria;
@@ -345,59 +362,11 @@ public class Ventana extends JFrame {
                     System.out.println("Enviando datos al servidor: ");
                     cli.enviarAlServidor(artic);
 
-                }
+                //}
             }
         });
 
     }
 
-//    public void IniciarHilo() {
-//        int puerto = 1234;
-//        String servidor = "localhost";
-//        
-//        try{          
-//            sok = new Socket(servidor, puerto);
-//            entrada = new ObjectInputStream(sok.getInputStream());
-//            salida = new ObjectOutputStream(sok.getOutputStream());
-//            System.out.print("Entre al run");
-//           
-//            while (hilito == Thread.currentThread()){
-//                
-//                // Espera la respuesta..
-//                //String c = srv.nextLine(); llenar la tabla
-//                Servidor serv=null;
-//                 try{
-//                      serv = (Servidor)entrada.readObject();
-//                  }
-//                   catch (ClassNotFoundException ex) {
-//                    
-//                } 
-//                catch (IOException ex) {
-//                    System.err.println(ex.getMessage());
-//                }
-//                
-//                 
-//                ArrayList<Articulo> arti = serv.getBase().getAr().getLista();
-//                String mat[][]=new String[arti.size()][5];
-//                for(int i=0;i<arti.size();i++){
-//                    mat[i][0]= arti.get(i).getCategoria();
-//                    mat[i][1] = arti.get(i).getNombre();
-//                    mat[i][2] = Integer.toString(arti.get(i).getCantidad());
-//                    mat[i][3] = Integer.toString(arti.get(i).getPrecio());
-//                    mat[i][4] = arti.get(i).getDescripcion();
-//                }
-//        
-//                jTable1.setModel(new javax.swing.table.DefaultTableModel(
-//                                mat, nameColums
-//                ));        
-//                 
-//                
-//            }
-//                       
-//        } catch (IOException e) {
-//            System.err.println("Ocurrio un error con la entrada de datos ... ");
-//        }catch (Exception e) {
-//            System.err.println(" Ocurrio un error con la respuesta del servidor ...");
-//        }
-//    }       
+      
 }

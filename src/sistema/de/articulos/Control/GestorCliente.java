@@ -70,7 +70,7 @@ public class GestorCliente implements Runnable{
                         cadena = gestorPrincipal.eliminar(vec[1]);
                         break;
                 }
-                
+                System.out.println(cadena);
                 try{   
                    
                     salida.println(cadena);
