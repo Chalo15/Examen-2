@@ -47,7 +47,7 @@ public class GestorBaseDeDatos {
         }
 
         PreparedStatement stm
-                = cnx.prepareStatement("INSERT INTO   "//modificar
+                = cnx.prepareStatement("INSERT INTO articulos ; "//modificar
                         + "(categoria, nombre, cantidad, precio, descripcion) "//modificar
                         + "VALUES(?, ?, ?, ?, ?); ");//modificar
         stm.clearParameters();
@@ -127,7 +127,7 @@ public class GestorBaseDeDatos {
         }
         if (cont == 0) {
             PreparedStatement stmm
-                    = cnx.prepareStatement("DELETE FROM  "
+                    = cnx.prepareStatement("DELETE FROM articulos; "
                             + "WHERE categoria=?; ");
             stmm.clearParameters();
             stmm.setString(2, cat);

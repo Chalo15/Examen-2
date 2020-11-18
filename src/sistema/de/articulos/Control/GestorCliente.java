@@ -55,25 +55,27 @@ public class GestorCliente implements Runnable{
                 
 
                 int opc = Integer.parseInt(vec[0]);
+                System.out.println(opc);
                 
-//                switch(opc){
-//                    case 0:
-//                        break;
-//                    case 1:
-//                        cadena = gestorPrincipal.agregar(vec[1],vec[2],vec[5],Integer.parseInt(vec[3]),Integer.parseInt(vec[4]));
-//                        break;
-//                    case 2:
-//                        cadena = gestorPrincipal.consultar(vec[1]);
-//                        break;
-//                    case 3:
-//                        cadena = gestorPrincipal.eliminar(vec[1]);
-//                        break;
-//                }
+                switch(opc){
+                    case 0:
+                        break;
+                    case 1:
+                        cadena = gestorPrincipal.agregar(vec[1],vec[2],vec[5],Integer.parseInt(vec[3]),Integer.parseInt(vec[4]));
+                        break;
+                    case 2:
+                        cadena = gestorPrincipal.consultar(vec[1]);
+                        break;
+                    case 3:
+                        cadena = gestorPrincipal.eliminar(vec[1]);
+                        break;
+                }
                    
-                try{                      
-                    salida.println("Hola");
+                try{   
+                   
+                    salida.println(cadena);
                     salida.flush();
-                    System.out.println("Enviando datos al servidor: " + "Hola");
+                    //System.out.println("Enviando datos al servidor: " + "Hola");
                 }
                 catch(Exception ex){
                     ex.printStackTrace();

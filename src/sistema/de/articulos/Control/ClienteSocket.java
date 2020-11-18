@@ -47,7 +47,7 @@ public class ClienteSocket implements Runnable {
             // Espera la respuesta..
             String c = srv.nextLine();
             System.out.println("Confirmación: " + c);
-            //ven.actualizarTabla(c);                      
+            ven.actualizarTabla(c);                      
         }           
     }
     
