@@ -39,15 +39,19 @@ public class ClienteSocket implements Runnable {
             socket = new Socket("localhost",1234);
             salida = new PrintWriter(socket.getOutputStream());
             entrada = new BufferedInputStream(socket.getInputStream());
-        } catch (IOException ex) {
-            Logger.getLogger(ClienteSocket.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        while(true){
+            
             Scanner srv = new Scanner(entrada);
+            
+            while(true){
+            
             // Espera la respuesta..
             String c = srv.nextLine();
             System.out.println("Confirmación: " + c);
-            ven.actualizarTabla(c);                      
+            ven.actualizarTabla(c);                     
+        }
+            
+        } catch (IOException ex) {
+            Logger.getLogger(ClienteSocket.class.getName()).log(Level.SEVERE, null, ex);
         }           
     }
     

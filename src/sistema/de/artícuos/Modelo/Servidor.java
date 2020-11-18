@@ -86,9 +86,7 @@ public class Servidor  {
         
     }
     public String agregar(String nombre, String descripcion, String categoria, int precio, int cantidad) throws Exception{
-        return base.agregar(nombre, descripcion, categoria, precio, cantidad);   
-        
-      
+        return base.agregar(nombre, descripcion, categoria, precio, cantidad); 
     }
     public String consultar(String c) throws Exception{
         return base.consultar(c);  
@@ -96,9 +94,7 @@ public class Servidor  {
    
     }
     public String eliminar(String c) throws Exception{
-        return base.eliminar(c);
-                   
-   
+        return base.eliminar(c);      
     }
 
     public GestorBaseDeDatos getBase() {

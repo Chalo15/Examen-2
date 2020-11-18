@@ -24,130 +24,84 @@ public class GestorBaseDeDatos {
     String arti = "";
     private Articulo ar;
     Connection cnx;
+    Statement stmm;
+    PreparedStatement stm;
 
     String url;
     String user;
     String password;
 
     public GestorBaseDeDatos() {
-        cnx = null;
-
-        url = "jdbc:mysql://localhost:3306/inventario";
-        user = "root";
-        password = "sqldepablo99";
+        stm = null;
+        stmm = null;
     }
 
     public String agregar(String nombre, String descripcion, String categoria, int precio, int cantidad) throws Exception {
-
         try {
-            cnx = DriverManager.getConnection(url, user, password);
-        } catch (Exception exc) {
-            throw exc;
-        } finally {
+            cnx = ConexionBase.obtenerInstancia().obtenerConexion();
+            String consulta = "insert into articulos(categoria, nombre, cantidad, precio, descripcion) values (?,?,?,?,?)";
+            stm = cnx.prepareStatement(consulta);
+            stm.setString(1, categoria);
+            stm.setString(2, nombre);
+            stm.setString(3, String.valueOf(cantidad));
+            stm.setString(4, String.valueOf(precio));
+            stm.setString(5, descripcion);
+            stm.execute();
+            stm.close();
+        } catch (Exception ex) {
+            Logger.getLogger(GestorBaseDeDatos.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        PreparedStatement stm
-                = cnx.prepareStatement("INSERT INTO articulos ; "//modificar
-                        + "(categoria, nombre, cantidad, precio, descripcion) "//modificar
-                        + "VALUES(?, ?, ?, ?, ?); ");//modificar
-        stm.clearParameters();
-        stm.setString(2, categoria);
-        stm.setString(3, nombre);
-        stm.setString(4, String.valueOf(cantidad));
-        stm.setString(5, String.valueOf(precio));
-        stm.setString(6, descripcion);
-        if (stm.executeUpdate() != 1) {
-            throw new Exception();
-        }
-
-        Statement stmm = cnx.createStatement();
-        ResultSet rs = stmm.executeQuery("SELECT * FROM articulos;");
-        while (rs.next()) {
-            arti += rs.getString(2)+"_"+rs.getString(3)+"_"+rs.getString(4)+"_"+rs.getString(5)+"_"+rs.getString(6)+";";
-        }
-        try {
-            cnx.close();
-        } catch (Exception exc) {
-        } finally {
-            cnx = null;
-        }
-        return arti;
-
+        ConexionBase.obtenerInstancia().cerrarConexion();
+        return ObtenerBase();
     }
 
     public String consultar(String cate) throws Exception {
-
         try {
-            cnx = DriverManager.getConnection(url, user, password);
-        } catch (Exception exc) {
-            throw exc;
-        } finally {
-        }
-
-        Statement stm = cnx.createStatement();
-
-        // Contiene los datos recuperados.
-        ResultSet rs = stm.executeQuery("SELECT * FROM articulos; ");
-        while (rs.next()) {
-
-            String categoria = rs.getString("categoria");
-            if (categoria.equals(cate)) {
+            cnx = ConexionBase.obtenerInstancia().obtenerConexion();
+            String consulta = "SELECT * FROM articulos where categoria = " + cate;
+            stmm = cnx.createStatement();
+            ResultSet rs = stmm.executeQuery(consulta);
+            while (rs.next()) {
                 arti += rs.getString(2)+"_"+rs.getString(3)+"_"+rs.getString(4)+"_"+rs.getString(5)+"_"+rs.getString(6)+";";
-            }
+            }          
+        } catch (Exception ex) {
+            Logger.getLogger(GestorBaseDeDatos.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
-        try {
-            cnx.close();
-        } catch (Exception exc) {
-        } finally {
-            cnx = null;
-        }
+        ConexionBase.obtenerInstancia().cerrarConexion();
         return arti;
     }
 
     public String eliminar(String cat) throws Exception {
-
         try {
-            cnx = DriverManager.getConnection(url, user, password);
-        } catch (Exception exc) {
-            throw exc;
-        } finally {
+            cnx = ConexionBase.obtenerInstancia().obtenerConexion();
+            String consulta = "DELETE FROM articulos WHERE categoria = ?";
+            stm = cnx.prepareStatement(consulta);
+            stm.setString(1, cat);
+            stm.execute();
+            stm.close();
+        } catch (Exception ex) {
+            Logger.getLogger(GestorBaseDeDatos.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        Statement stm = cnx.createStatement();
-
-        // Contiene los datos recuperados.
-        ResultSet rs = stm.executeQuery("SELECT * FROM articulos; ");
-        int cont = 0;
-        while (rs.next()) {
-
-            String categoria = rs.getString("categoria");
-            if (categoria.equals(cat)) {
-                cont++;
-            }
-        }
-        if (cont == 0) {
-            PreparedStatement stmm
-                    = cnx.prepareStatement("DELETE FROM articulos; "
-                            + "WHERE categoria=?; ");
-            stmm.clearParameters();
-            stmm.setString(2, cat);
-            if (stmm.executeUpdate() != 1) {
-                throw new Exception();
-            }
-        }
-        Statement stmm = cnx.createStatement();
-        ResultSet rss = stmm.executeQuery("SELECT * FROM articulos;");
-        while (rs.next()) {
-            arti += rss.getString(2)+"_"+rss.getString(3)+"_"+rss.getString(4)+"_"+rss.getString(5)+"_"+rss.getString(6)+";";
-        }
-
-        try {
-            cnx.close();
-        } catch (Exception exc) {
-        } finally {
-            cnx = null;
-        }
-        return arti;
+        ConexionBase.obtenerInstancia().cerrarConexion();
+        return ObtenerBase();
     }
     
+    public String ObtenerBase() {
+        try {
+            cnx = ConexionBase.obtenerInstancia().obtenerConexion();
+            String consulta = "SELECT * FROM articulos";
+            stmm = cnx.createStatement();
+            ResultSet rs = stmm.executeQuery(consulta);
+            while (rs.next()) {
+                arti += rs.getString(2)+"_"+rs.getString(3)+"_"+rs.getString(4)+"_"+rs.getString(5)+"_"+rs.getString(6)+";";
+            }
+            
+        } catch (Exception ex) {
+            Logger.getLogger(GestorBaseDeDatos.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+        ConexionBase.obtenerInstancia().cerrarConexion();
+        return arti;
+    }
 }

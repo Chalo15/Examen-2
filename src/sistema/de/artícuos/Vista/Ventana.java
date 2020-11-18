@@ -83,12 +83,12 @@ public class Ventana extends JFrame {
             vec[2] = produc[2];
             vec[3] = produc[3];
             vec[5] = produc[5];
+            
             Tarticulo.addRow(vec);
         }
 
         Tarticulo.addColumn(nameColums);
         jTable1.setModel(Tarticulo);
-
     }
 
     public static void main(String[] args) {
