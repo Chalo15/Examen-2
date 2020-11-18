@@ -9,14 +9,19 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import sistema.de.artícuos.Vista.Articulo;
 
 /**
  *
  * @author Gonzalo
  */
-public class GestorBaseDeDatos{
+public class GestorBaseDeDatos {
+
+    String arti = "";
     private Articulo ar;
     Connection cnx;
 
@@ -32,20 +37,19 @@ public class GestorBaseDeDatos{
         password = "sqldepablo99";
     }
 
-        
-    public void agregar(String nombre, String descripcion, String categoria, int precio, int cantidad)throws Exception {
+    public String agregar(String nombre, String descripcion, String categoria, int precio, int cantidad) throws Exception {
 
-         try {
-        cnx = DriverManager.getConnection( url , user , password);
+        try {
+            cnx = DriverManager.getConnection(url, user, password);
         } catch (Exception exc) {
             throw exc;
         } finally {
         }
 
-        PreparedStatement stm =
-                cnx.prepareStatement("INSERT INTO   "//modificar
-            + "(categoria, nombre, cantidad, precio, descripcion) "//modificar
-            + "VALUES(?, ?, ?, ?, ?); ");//modificar
+        PreparedStatement stm
+                = cnx.prepareStatement("INSERT INTO   "//modificar
+                        + "(categoria, nombre, cantidad, precio, descripcion) "//modificar
+                        + "VALUES(?, ?, ?, ?, ?); ");//modificar
         stm.clearParameters();
         stm.setString(2, categoria);
         stm.setString(3, nombre);
@@ -58,31 +62,23 @@ public class GestorBaseDeDatos{
 
         Statement stmm = cnx.createStatement();
         ResultSet rs = stmm.executeQuery("SELECT * FROM articulos;");
-        while(rs.next()) {             
-
-              String catego = rs.getString("categoria");
-
-                String nomb = rs.getString("nombre");  
-                int canti = rs.getInt("cantidad");
-                int prec = rs.getInt("precio"); 
-                String descri = rs.getString("descripcion"); 
-                Articulo arti=new Articulo(nomb,descri,catego,prec,canti,0);
-                ar.InsertarLista(arti);
+        while (rs.next()) {
+            arti += rs.getString(2)+"_"+rs.getString(3)+"_"+rs.getString(4)+"_"+rs.getString(5)+"_"+rs.getString(6)+";";
         }
-
         try {
             cnx.close();
         } catch (Exception exc) {
         } finally {
             cnx = null;
         }
+        return arti;
 
     }
-        
-    public void consultar(String cate) throws Exception{                  
+
+    public String consultar(String cate) throws Exception {
 
         try {
-            cnx = DriverManager.getConnection( url , user , password);
+            cnx = DriverManager.getConnection(url, user, password);
         } catch (Exception exc) {
             throw exc;
         } finally {
@@ -92,74 +88,57 @@ public class GestorBaseDeDatos{
 
         // Contiene los datos recuperados.
         ResultSet rs = stm.executeQuery("SELECT * FROM articulos; ");
-        while(rs.next()) {
+        while (rs.next()) {
 
             String categoria = rs.getString("categoria");
-            if(categoria.equals(cate)){
-                String nombre = rs.getString("nombre");  
-                int cantidad = rs.getInt("cantidad");
-                int precio = rs.getInt("precio"); 
-                String descripcion = rs.getString("descripcion"); 
-                Articulo arti=new Articulo(nombre,descripcion,categoria,precio,cantidad,0);
-                ar.InsertarLista(arti);
-            }             
+            if (categoria.equals(cate)) {
+                arti += rs.getString(2)+"_"+rs.getString(3)+"_"+rs.getString(4)+"_"+rs.getString(5)+"_"+rs.getString(6)+";";
+            }
         }
-
-
         try {
-              cnx.close();
+            cnx.close();
         } catch (Exception exc) {
         } finally {
-              cnx = null;
+            cnx = null;
         }
+        return arti;
     }
-        
-    public void eliminar(String cat) throws Exception{
-               
+
+    public String eliminar(String cat) throws Exception {
+
         try {
-            cnx = DriverManager.getConnection( url , user , password);
-        } 
-        catch (Exception exc) {
+            cnx = DriverManager.getConnection(url, user, password);
+        } catch (Exception exc) {
             throw exc;
-        } 
-        finally {
+        } finally {
         }
 
         Statement stm = cnx.createStatement();
 
         // Contiene los datos recuperados.
         ResultSet rs = stm.executeQuery("SELECT * FROM articulos; ");
-        int cont=0;
-        while(rs.next()) {
+        int cont = 0;
+        while (rs.next()) {
 
             String categoria = rs.getString("categoria");
-            if(categoria.equals(cat)){
-              cont++;
+            if (categoria.equals(cat)) {
+                cont++;
             }
-            } 
-            if(cont==0){
-                PreparedStatement stmm =
-                cnx.prepareStatement("DELETE FROM  "
-                + "WHERE categoria=?; ");
-                   stmm.clearParameters();
-                   stmm.setString(2, cat);
-                if (stmm.executeUpdate() != 1) {
-                   throw new Exception();
-                }    
+        }
+        if (cont == 0) {
+            PreparedStatement stmm
+                    = cnx.prepareStatement("DELETE FROM  "
+                            + "WHERE categoria=?; ");
+            stmm.clearParameters();
+            stmm.setString(2, cat);
+            if (stmm.executeUpdate() != 1) {
+                throw new Exception();
             }
-        Statement stmmm = cnx.createStatement();
-        ResultSet rss = stmmm.executeQuery("SELECT * FROM ; ");
-        while(rss.next()) {
-
-
-            String catego = rs.getString("categoria");
-
-            String nomb = rs.getString("nombre");  
-            int canti = rs.getInt("cantidad");
-            int prec = rs.getInt("precio"); 
-            String descri = rs.getString("descripcion"); 
-            Articulo arti=new Articulo(nomb,descri,catego,prec,canti,0);
-            ar.InsertarLista(arti);
+        }
+        Statement stmm = cnx.createStatement();
+        ResultSet rss = stmm.executeQuery("SELECT * FROM articulos;");
+        while (rs.next()) {
+            arti += rss.getString(2)+"_"+rss.getString(3)+"_"+rss.getString(4)+"_"+rss.getString(5)+"_"+rss.getString(6)+";";
         }
 
         try {
@@ -167,14 +146,8 @@ public class GestorBaseDeDatos{
         } catch (Exception exc) {
         } finally {
             cnx = null;
-        }    
+        }
+        return arti;
     }
-
-    public Articulo getAr() {
-        return ar;
-    }
-
-    
-    
     
 }

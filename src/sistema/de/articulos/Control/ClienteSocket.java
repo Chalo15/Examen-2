@@ -5,11 +5,14 @@
  */
 package sistema.de.articulos.Control;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import sistema.de.artícuos.Vista.Articulo;
@@ -20,8 +23,8 @@ import sistema.de.artícuos.Vista.Ventana;
  * @author USER
  */
 public class ClienteSocket implements Runnable {
-    private ObjectInputStream entrada;
-    private ObjectOutputStream salida;
+    private PrintWriter salida;
+    private BufferedInputStream entrada;
     private Socket socket;
     private Ventana ven;
     
@@ -34,33 +37,24 @@ public class ClienteSocket implements Runnable {
 
         try {
             socket = new Socket("localhost",1234);
-            entrada= new ObjectInputStream(socket.getInputStream());
-            salida = new ObjectOutputStream(socket.getOutputStream());
+            salida = new PrintWriter(socket.getOutputStream());
+            entrada = new BufferedInputStream(socket.getInputStream());
         } catch (IOException ex) {
             Logger.getLogger(ClienteSocket.class.getName()).log(Level.SEVERE, null, ex);
         }
         while(true){
-            try {
-                //recibiendo del servidor
-                ArrayList<Articulo> a = (ArrayList)entrada.readObject();
-                ven.actualizarTabla(a);
-                
-            } catch (IOException ex) {
-                Logger.getLogger(ClienteSocket.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(ClienteSocket.class.getName()).log(Level.SEVERE, null, ex);
-            }
-                       
+            Scanner srv = new Scanner(entrada);
+            // Espera la respuesta..
+            String c = srv.nextLine();
+            System.out.println("Confirmación: " + c);
+            //ven.actualizarTabla(c);                      
         }           
     }
     
     //enviando al servidor
-    public void enviarAlServidor(Articulo ar){
-        try {
-            salida.writeObject(ar);
-        } catch (IOException ex) {
-            Logger.getLogger(ClienteSocket.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public void enviarAlServidor(String ar){
+        salida.println(ar);
+        salida.flush();
     }
     
     

@@ -85,18 +85,18 @@ public class Servidor  {
         }
         
     }
-    public void agregar(String nombre, String descripcion, String categoria, int precio, int cantidad) throws Exception{
-        base.agregar(nombre, descripcion, categoria, precio, cantidad);   
+    public String agregar(String nombre, String descripcion, String categoria, int precio, int cantidad) throws Exception{
+        return base.agregar(nombre, descripcion, categoria, precio, cantidad);   
         
       
     }
-    public void consultar(String c) throws Exception{
-        base.consultar(c);  
+    public String consultar(String c) throws Exception{
+        return base.consultar(c);  
         
    
     }
-    public void eliminar(String c) throws Exception{
-        base.eliminar(c);
+    public String eliminar(String c) throws Exception{
+        return base.eliminar(c);
                    
    
     }
