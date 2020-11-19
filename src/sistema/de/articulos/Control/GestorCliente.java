@@ -7,16 +7,11 @@ package sistema.de.articulos.Control;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import sistema.de.artícuos.Modelo.Servidor;
-import sistema.de.artícuos.Vista.Articulo;
 
 /**
  *
@@ -75,7 +70,6 @@ public class GestorCliente implements Runnable{
                    
                     salida.println(cadena);
                     salida.flush();
-                    //System.out.println("Enviando datos al servidor: " + "Hola");
                 }
                 catch(Exception ex){
                     ex.printStackTrace();

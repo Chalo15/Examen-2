@@ -7,7 +7,6 @@ package sistema.de.artícuos.Vista;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
@@ -210,13 +209,13 @@ public class Ventana extends JFrame {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
                 new Object[][]{
-                    {null, null, null, null, null},
-                    {null, null, null, null, null},
-                    {null, null, null, null, null},
-                    {null, null, null, null, null},
-                    {null, null, null, null, null},
-                    {null, null, null, null, null},
-                    {null, null, null, null, null},
+                    {"Lacteos", "Yogurt", 10, 2500, "Light"},
+                    {"Abarrotes", "Aceite Mazola", "Para cocinar", 20, 2700},
+                    {"Libros", "En las motañas de la locura", 7, 5000, "Autor HP Lovecraft"},
+                    {"Herramientas", "Taladro", 5, 15000, "Herramienta de hogar"},
+                    {"Juguetes", "Circuito de carros", 9, 7000, "Para juegos "},
+                    {"Jueguetes", "Castillo de princesas", 5, 7000, "Para juegos"},
+                    {"Oficina", "Silla de oficina", 8, 20000, "Asiento para oficina"},
                     {null, null, null, null, null},
                     {null, null, null, null, null},
                     {null, null, null, null, null}

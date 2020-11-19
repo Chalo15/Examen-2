@@ -6,14 +6,9 @@
 package sistema.de.articulos.Control;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import sistema.de.artícuos.Vista.Articulo;
 
 /**
@@ -114,12 +109,18 @@ public class GestorBaseDeDatos {
             Logger.getLogger(GestorBaseDeDatos.class.getName()).log(Level.SEVERE, null, ex);
         }
         ConexionBase.obtenerInstancia().cerrarConexion();*/
-      for(int i=0;i<lista.size();i++){
-          if(lista.get(i).getCategoria().equals(cat)){
-              lista.remove(i);
-          }
-      }
-        return ObtenerBase();
+        for(int i=0;i<lista.size();i++){
+            if(lista.get(i).getCategoria().equals(cat)){
+                lista.remove(i);
+            }
+        }
+        arti = "";
+        for(int i=0;i<lista.size();i++){
+            //Articulo ar=lista.get(i);
+            arti += lista.get(i).getCategoria()+"_"+lista.get(i).getNombre()+"_"+String.valueOf(lista.get(i).getCantidad())+"_"+String.valueOf(lista.get(i).getPrecio())+"_"+lista.get(i).getDescripcion()+";";
+            
+        }
+        return arti;
     }
 
     public String ObtenerBase() {
@@ -137,9 +138,10 @@ public class GestorBaseDeDatos {
             return null;
         }
         ConexionBase.obtenerInstancia().cerrarConexion();*/
+        arti = "";
         for(int i=0;i<lista.size();i++){
-            Articulo ar=lista.get(i);
-            arti+= ar.getCategoria()+"_"+ar.getNombre()+"_"+String.valueOf(ar.getCantidad())+"_"+String.valueOf(ar.getPrecio())+"_"+ar.getDescripcion()+";";
+            //Articulo ar=lista.get(i);
+            arti += lista.get(i).getCategoria()+"_"+lista.get(i).getNombre()+"_"+String.valueOf(lista.get(i).getCantidad())+"_"+String.valueOf(lista.get(i).getPrecio())+"_"+lista.get(i).getDescripcion()+";";
             
         }
         return arti;
